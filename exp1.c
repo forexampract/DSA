@@ -6,44 +6,47 @@
 
 typedef struct{ char *n,*a; int d; } Day;
 
-void create(Day *c){
-    for(int i=0;i<D;i++){
-        c[i].n=malloc(20); c[i].a=malloc(100);
-        if(!c[i].n||!c[i].a){ printf("Memory error\n"); exit(1); }
-    }
+void create(Day *w){
+    for(int i=0;i<D;i++)
+        if(!(w[i].n=malloc(20))||!(w[i].a=malloc(100))){
+            printf("Memory error\n"); exit(1);
+        }
 }
 
-void read(Day *c){
+void read(Day *w){
     char b[20];
     for(int i=0;i<D;i++){
-        while(1){
+        do{
             printf("Day %d name: ",i+1);
-            fgets(c[i].n,20,stdin); c[i].n[strcspn(c[i].n,"\n")]=0;
-            if(*c[i].n) break; printf("Error: Name empty\n");
-        }
-        while(1){
+            fgets(w[i].n,20,stdin);
+            w[i].n[strcspn(w[i].n,"\n")]=0;
+            if(!*w[i].n) puts("Error: Name empty");
+        }while(!*w[i].n);
+
+        do{
             printf("Date: "); fgets(b,20,stdin);
-            if(sscanf(b,"%d",&c[i].d)==1 && c[i].d>0) break;
-            printf("Error: Invalid date\n");
-        }
-        while(1){
+            if(sscanf(b,"%d",&w[i].d)!=1||w[i].d<=0)
+                puts("Error: Invalid date");
+        }while(w[i].d<=0);
+
+        do{
             printf("Activity: ");
-            fgets(c[i].a,100,stdin); c[i].a[strcspn(c[i].a,"\n")]=0;
-            if(*c[i].a) break; printf("Error: Activity empty\n");
-        }
+            fgets(w[i].a,100,stdin);
+            w[i].a[strcspn(w[i].a,"\n")]=0;
+            if(!*w[i].a) puts("Error: Activity empty");
+        }while(!*w[i].a);
     }
 }
 
-void display(Day *c){
-    printf("\nWeekly Report:\n");
+void display(Day *w){
     for(int i=0;i<D;i++)
-        printf("%s | %d | %s\n",c[i].n,c[i].d,c[i].a);
+        printf("%s | %d | %s\n",w[i].n,w[i].d,w[i].a);
 }
 
 int main(){
-    Day *c=malloc(D*sizeof(Day));
-    if(!c){ printf("Memory error\n"); return 1; }
-    create(c); read(c); display(c);
-    for(int i=0;i<D;i++){ free(c[i].n); free(c[i].a); }
-    free(c); return 0;
+    Day *w=malloc(D*sizeof(Day));
+    if(!w){ puts("Memory error"); return 1; }
+    create(w); read(w); display(w);
+    for(int i=0;i<D;i++){ free(w[i].n); free(w[i].a); }
+    free(w);
 }
