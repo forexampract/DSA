@@ -1,52 +1,55 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
-#define D 7
+typedef struct {
+    char *name;
+    int date;
+    char *description;
+} Day;
 
-typedef struct{ char *n,*a; int d; } Day;
+void read(Day *week, int size) {
+    for (int i = 0; i < size; i++) {
+        week[i].name = (char *)malloc(20 * sizeof(char));
+        week[i].description = (char *)malloc(100 * sizeof(char));
 
-void create(Day *w){
-    for(int i=0;i<D;i++)
-        if(!(w[i].n=malloc(20))||!(w[i].a=malloc(100))){
-            printf("Memory error\n"); exit(1);
+        printf("\nEnter name of day %d: ", i + 1);
+        scanf("%19s", week[i].name);
+
+        while (1) {
+            printf("Enter date (positive number): ");
+            if (scanf("%d", &week[i].date) != 1 || week[i].date <= 0) {
+                printf("Invalid date! Please enter a positive number.\n");
+                while (getchar() != '\n');  // clear input buffer
+            } else {
+                break;
+            }
         }
-}
 
-void read(Day *w){
-    char b[20];
-    for(int i=0;i<D;i++){
-        do{
-            printf("Day %d name: ",i+1);
-            fgets(w[i].n,20,stdin);
-            w[i].n[strcspn(w[i].n,"\n")]=0;
-            if(!*w[i].n) puts("Error: Name empty");
-        }while(!*w[i].n);
-
-        do{
-            printf("Date: "); fgets(b,20,stdin);
-            if(sscanf(b,"%d",&w[i].d)!=1||w[i].d<=0)
-                puts("Error: Invalid date");
-        }while(w[i].d<=0);
-
-        do{
-            printf("Activity: ");
-            fgets(w[i].a,100,stdin);
-            w[i].a[strcspn(w[i].a,"\n")]=0;
-            if(!*w[i].a) puts("Error: Activity empty");
-        }while(!*w[i].a);
+        printf("Enter description: ");
+        scanf(" %[^\n]", week[i].description);
     }
 }
 
-void display(Day *w){
-    for(int i=0;i<D;i++)
-        printf("%s | %d | %s\n",w[i].n,w[i].d,w[i].a);
+void display(Day *week, int size) {
+    printf("\n--- Week's Activity Details ---\n");
+    for (int i = 0; i < size; i++) {
+        printf("Day: %s | Date: %d | Activity: %s\n",
+               week[i].name, week[i].date, week[i].description);
+    }
 }
 
-int main(){
-    Day *w=malloc(D*sizeof(Day));
-    if(!w){ puts("Memory error"); return 1; }
-    create(w); read(w); display(w);
-    for(int i=0;i<D;i++){ free(w[i].n); free(w[i].a); }
-    free(w);
+int main() {
+    int size = 7;
+    Day *week = (Day *)malloc(size * sizeof(Day));
+
+    read(week, size);
+    display(week, size);
+
+    for (int i = 0; i < size; i++) {
+        free(week[i].name);
+        free(week[i].description);
+    }
+    free(week);
+
+    return 0;
 }
